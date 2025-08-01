@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import pywt                    
 
-# Load the img paths, final path will be changed later based on the database location
+# Load the img paths, final path will be changed later based on UI flow and the database location
 original_image_path      = "./utils/original_images/landscape2.jpg"
 watermark_image_path = "./utils/watermark_images/kitshop_logo.jpg"
 

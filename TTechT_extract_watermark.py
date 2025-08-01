@@ -6,12 +6,14 @@ import cv2
 import pywt
 import os
 
-# Load the img paths, final path will be changed later based on the database location
-original_image_path = "./utils/original_images/landscape2.jpg"
-watermark_image_path = "./utils/watermark_images/kitshop_logo.jpg"
-watermarked_image_path = "./utils/watermarked_product_img/watermarked_landscape2.jpg"
-extracted_watermark_path = "./utils/extracted_watermark/extracted_kitshop_logo_landscape2.jpg"
-# ****The scaling factor must be the same with the embedding 
+# Load the img paths, final path will be changed later based on UI flow and the database location
+original_image_path = "./utils/original_images/product9.jpg"
+watermark_image_path = "./utils/watermark_images/kiet_logo.jpg"
+# Watermarked image path and Attacked image path
+#watermarked_image_path = "./utils/watermarked_product_img/watermarked_product5.jpg"
+watermarked_image_path = "./utils/attacked_images/product9_attacked_scale.jpg"
+extracted_watermark_path = "./utils/extracted_attacked_watermark/extracted_attacked_product9_scale.jpg"
+# ****The scaling factor must be the same with the embedding
 alpha = 0.6
 wavelet_name = "haar"
 
