@@ -3,7 +3,8 @@ from PIL import Image
 import numpy as np
 import cv2
 import pywt                    
-
+import json, os
+from pathlib import Path
 # Load the img paths, final path will be changed later based on UI flow and the database location
 original_image_path      = "./utils/original_images/landscape2.jpg"
 watermark_image_path = "./utils/watermark_images/kitshop_logo.jpg"
@@ -11,6 +12,8 @@ watermark_image_path = "./utils/watermark_images/kitshop_logo.jpg"
 original_image  = Image.open(original_image_path).convert("RGB")
 watermark_image = Image.open(watermark_image_path).convert("RGB")
 
+#Variables
+wavelet_name = "haar"  # Wavelet type for DWT
 # Resize watermark to match original image size
 watermark_image = watermark_image.resize(original_image.size)
 
@@ -28,8 +31,8 @@ def embed_watermark(orig_channel, wm_channel, alpha=0.6, cname=""):
               bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
 
         # Implement DWT algorithm on the original and watermark channels
-        LL_orig, (LH_orig, HL_orig, HH_orig) = pywt.dwt2(orig_channel, 'haar') # LL is the low-frequency sub-band -> Highest embedded quality
-        LL_wm, (LH_wm, HL_wm, HH_wm) = pywt.dwt2(wm_channel,  'haar')
+        LL_orig, (LH_orig, HL_orig, HH_orig) = pywt.dwt2(orig_channel, wavelet_name) # LL is the low-frequency sub-band -> Highest embedded quality
+        LL_wm, (LH_wm, HL_wm, HH_wm) = pywt.dwt2(wm_channel, wavelet_name)
         pbar.update(25)
 
         # Implement SVD algorithm on LL sub-bands
@@ -44,15 +47,15 @@ def embed_watermark(orig_channel, wm_channel, alpha=0.6, cname=""):
 
         # Reconstruct the modified channel using Inverse DWT
         coeffs_modifier = (LL_modifier, (LH_orig, HL_orig, HH_orig))
-        watermarked_channel = pywt.idwt2(coeffs_modifier, 'haar')
+        watermarked_channel = pywt.idwt2(coeffs_modifier, wavelet_name)
         pbar.update(25)
 
-    return watermarked_channel
+    return watermarked_channel, S_orig, LL_orig.shape
 
 alpha = 0.6   # Scaling factor
-watermark_r_modifier = embed_watermark(orig_r, watermark_r, alpha, "Red")
-watermark_g_modifier = embed_watermark(orig_g, watermark_g, alpha, "Green")
-watermark_b_modifier = embed_watermark(orig_b, watermark_b, alpha, "Blue")
+watermark_r_modifier, S_val_R, LL_shape_R = embed_watermark(orig_r, watermark_r, alpha, "Red")
+watermark_g_modifier, S_val_G, LL_shape_G = embed_watermark(orig_g, watermark_g, alpha, "Green")
+watermark_b_modifier, S_val_B, LL_shape_B = embed_watermark(orig_b, watermark_b, alpha, "Blue")
 
 # Normalize back to 0-255 uint8 and save
 def normalize_uint8(mat):
@@ -69,6 +72,39 @@ watermarked_rgb = Image.merge("RGB",
                                Image.fromarray(orig_b8)))
 # Output path will be changed later based on the database location
 out_path = "./utils/watermarked_product_img/watermarked_landscape2.jpg"
+
+# Prevent save errors in API/server
+os.makedirs(os.path.dirname(out_path), exist_ok=True)
+# Save the watermarked image
 watermarked_rgb.save(out_path)
-watermarked_rgb.show()
+
+# Remove this show line while integrate to website because it can hang Flask API runs headless
+# watermarked_rgb.show()
 print(f"Watermarked image saved to {out_path}")
+
+# Dump side info for extraction in e-commerce website
+meta = {
+    "wm_params": { "alpha": float(alpha), "wavelet": wavelet_name, "channels": "RGB" },
+
+    "canonical_size": list(watermarked_rgb.size),
+
+    # Where this watermarked file was written (handy for logging/DB ingestion)
+    "output_path": out_path,
+
+    "ll_shapes": { "R": list(LL_shape_R), "G": list(LL_shape_G), "B": list(LL_shape_B) },
+    "host_S": {
+        "R": [float(x) for x in S_val_R.tolist()],
+        "G": [float(x) for x in S_val_G.tolist()],
+        "B": [float(x) for x in S_val_B.tolist()]
+    },
+    "watermark_ref": {
+        "path": str(Path(watermark_image_path)),
+        "resized_to": list(original_image.size)
+    }
+}
+# Save metadata to a JSON file
+meta_path = os.path.splitext(out_path)[0] + ".wm.json"
+os.makedirs(os.path.dirname(meta_path), exist_ok=True)
+with open(meta_path, "w", encoding="utf-8") as f:
+    json.dump(meta, f, ensure_ascii=False, indent=2)
+print(f"[embed] Saved side-info JSON -> {meta_path}")
