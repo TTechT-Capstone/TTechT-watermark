@@ -91,10 +91,18 @@ def find_best_sideinfo_for_suspect(suspect_image_path, dir_path=SIDEINFO_DIR, ma
 
 
 # Paths - adjust later on
+
+#This is path of the upload image after user pressed upload image
 suspect_image_path       = "./utils/watermarked_product_img/5.jpg"
-sideinfo_json_path       = "./utils/watermarked_product_img/5.wm.json"
+
+#For CLI & Admin - use this ****
+#sideinfo_json_path       = "./utils/watermarked_product_img/5.wm.json"
+
 #Let the helper auto-pick if there is no known sideinfo
-#sideinfo_json_path       = None
+# We use this in real website since the original image of user input is unknown
+sideinfo_json_path       = None
+
+# Path to save the extracted watermark
 extracted_watermark_path = "./utils/extracted_watermark/extracted_5.jpg"
 
 #admin 
