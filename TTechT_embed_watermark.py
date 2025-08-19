@@ -6,8 +6,8 @@ import pywt
 import json, os
 from pathlib import Path
 # Load the img paths, final path will be changed later based on UI flow and the database location
-original_image_path      = "./utils/original_images/landscape2.jpg"
-watermark_image_path = "./utils/watermark_images/kitshop_logo.jpg"
+original_image_path      = "./utils/original_images/product5.jpg"
+watermark_image_path = "./utils/watermark_images/origity_logo.jpg"
 
 original_image  = Image.open(original_image_path).convert("RGB")
 watermark_image = Image.open(watermark_image_path).convert("RGB")
@@ -71,7 +71,7 @@ watermarked_rgb = Image.merge("RGB",
                                Image.fromarray(orig_g8),
                                Image.fromarray(orig_b8)))
 # Output path will be changed later based on the database location
-out_path = "./utils/watermarked_product_img/watermarked_landscape2.jpg"
+out_path = "./utils/watermarked_product_img/5.jpg"
 
 # Prevent save errors in API/server
 os.makedirs(os.path.dirname(out_path), exist_ok=True)

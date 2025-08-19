@@ -91,13 +91,13 @@ def find_best_sideinfo_for_suspect(suspect_image_path, dir_path=SIDEINFO_DIR, ma
 
 
 # Paths - adjust later on
-suspect_image_path       = "./utils/attacked_images/product9_attacked_scale.jpg"
-sideinfo_json_path       = "./utils/watermarked_product_img/watermarked_landscape2.wm.json"
+suspect_image_path       = "./utils/watermarked_product_img/5.jpg"
+sideinfo_json_path       = "./utils/watermarked_product_img/5.wm.json"
 #Let the helper auto-pick if there is no known sideinfo
 #sideinfo_json_path       = None
-extracted_watermark_path = "./utils/extracted_attacked_watermark/extracted_from_suspect.jpg"
+extracted_watermark_path = "./utils/extracted_watermark/extracted_5.jpg"
 
-
+#admin 
 def extract_channel(suspect_channel, watermark_channel, S_orig_saved, wavelet_name, alpha=0.6, cname=""):
     """
     Semi-blind extraction using saved S_orig (from .wm.json).
