@@ -1,0 +1,21 @@
+{
+  "id": "1755617270_0973962f",
+  "created_at": 1755617270,
+  "metrics": {
+    "pcc": -0.7257258296012878,
+    "pcc_abs": 0.7257258296012878,
+    "mse": 42.40638114768313,
+    "ssim": 0.7283746791724528,
+    "psnr": 31.856491484093876
+  },
+  "thresholds": {
+    "pcc_abs": 0.7
+  },
+  "passed": true,
+  "paths": {
+    "original_logo": "./detections\\1755617270_0973962f\\original_logo.jpg",
+    "extracted_wm": "./detections\\1755617270_0973962f\\extracted_wm.jpg",
+    "suspect": null,
+    "sideinfo_json": null
+  }
+}
